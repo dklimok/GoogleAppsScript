@@ -1,8 +1,34 @@
 function onEdit(e) {
-  var sheet = SpreadsheetApp.getActiveSheet();
+  // Settings start 
+ /**
+ * the .getLastRow() and .getLastColumn() methods takes as much time as .getActiveSheet()
+ * if it's possible make a guess about last row and column (it can be more the current sheet size)
+ * as it's faster to .getRange() for bigger range then call getLast... twice
+ * 
+ */
+  var useGuess = true; // false 
+  var lastRowGuess = 1000;
+  var lastColumnGuess = 30;
+  
+  var firstFilteredRow = 2;
+  var firstFilteredCol = 1; 
+  var filterCol = 4;
+  
   var criteria = SpreadsheetApp.newFilterCriteria().whenTextContains("4210").build();
-  var lastRow = sheet.getLastRow();
-  var lastCol = sheet.getLastColumn();
-  var range = sheet.getRange(2, 1, lastRow - 1, lastCol);
-  range.createFilter().setColumnFilterCriteria(4, criteria);
+  // Settings end 
+  
+  var sheet = SpreadsheetApp.getActiveSheet();
+    
+  var lastRow = (useGuess)?lastRowGuess:sheet.getLastRow();  
+  var lastCol = (useGuess)?lastColumnGuess:sheet.getLastColumn();
+
+  var rows = lastRow - (firstFilteredRow - 1);
+  var cols = lastCol - (firstFilteredCol - 1);
+  
+  try{
+    var range = sheet.getRange(firstFilteredRow, firstFilteredCol, rows, cols);
+    range.createFilter().setColumnFilterCriteria(filterCol, criteria);
+  }catch(e){
+    Logger.log(JSON.stringlify(e)
+  }
 }
